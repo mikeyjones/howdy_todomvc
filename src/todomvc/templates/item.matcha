@@ -1,0 +1,62 @@
+{> with item as Item
+{> with editing as Bool
+
+{> import todomvc/item.{Item}
+{> import todomvc/web
+{> import gleam/int
+
+<li 
+  id="item-{{ int.to_string(item.id) }}"
+  class="{% if item.completed %}completed{% endif %} {% if editing %}editing{% endif %}"
+>
+  <div class="view">
+    <input
+      class="toggle"
+      type="checkbox"
+      autocomplete="off"
+      {% if item.completed %}checked{% endif %}
+    >
+
+    <label>
+      {{ web.escape(item.content) }}
+    </label>
+
+    <a
+      class="edit-btn"
+      hx-get="/todos/{{ int.to_string(item.id) }}"
+      hx-target="#item-{{ int.to_string(item.id) }}"
+    >✎</a>
+
+    <button
+      class="destroy"
+      hx-delete="/todos/{{ int.to_string(item.id) }}"
+      hx-target="#item-{{ int.to_string(item.id) }}"
+    ></button>
+    </form>
+
+    <form
+      class="todo-mark"
+      hx-patch="/todos/{{ int.to_string(item.id) }}/completion"
+      hx-target="#item-{{ int.to_string(item.id) }}"
+      hx-swap="outerHTML"
+    >
+      <button></button>
+    </form>
+  </div>
+
+  <input 
+    {% if editing %}
+    autofocus
+    onfocus="this.setSelectionRange(this.value.length,this.value.length)"
+    {% endif %}
+    required
+    maxlength="500"
+    class="edit"
+    type="text"
+    name="content"
+    value="{{ web.escape(item.content) }}"
+    hx-patch="/todos/{{ int.to_string(item.id) }}"
+    hx-target="#item-{{ int.to_string(item.id) }}"
+    hx-swap="outerHTML"
+    hx-trigger="blur,keypress[key == 'Enter']"
+  >
